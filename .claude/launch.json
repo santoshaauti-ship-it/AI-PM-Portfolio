@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "memory-game",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "/Users/santosh.auti/GHCP Experiment/memory-game-GHCP"],
+      "port": 8765
+    }
+  ]
+}
