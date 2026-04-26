@@ -6,13 +6,81 @@
     <title>Memory Game</title>
     <style>
         /* Reset default styles and set up CSS custom properties for theming */
-        :root {
+        :root,
+        [data-theme="light"] {
+            /* Light theme (default) */
             --primary-color: #2196f3;
             --background-color: #f5f5f5;
             --card-back: #1976d2;
             --card-front: #ffffff;
             --text-color: #333333;
             --success-color: #4caf50;
+            --button-hover: #1565c0;
+            --button-active: #0d47a1;
+            --controls-bg: #ffffff;
+            --modal-bg: rgba(0,0,0,0.5);
+            --modal-content-bg: #ffffff;
+            --border-color: rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #64b5f6;
+            --background-color: #121212;
+            --card-back: #333333;
+            --card-front: #1e1e1e;
+            --text-color: #ffffff;
+            --success-color: #81c784;
+            --button-hover: #42a5f5;
+            --button-active: #2196f3;
+            --controls-bg: #1e1e1e;
+            --modal-bg: rgba(0,0,0,0.8);
+            --modal-content-bg: #1e1e1e;
+            --border-color: rgba(255,255,255,0.1);
+        }
+
+        [data-theme="ocean"] {
+            --primary-color: #006064;
+            --background-color: #e0f7fa;
+            --card-back: #00838f;
+            --card-front: #ffffff;
+            --text-color: #004d40;
+            --success-color: #00897b;
+            --button-hover: #00838f;
+            --button-active: #004d40;
+            --controls-bg: #ffffff;
+            --modal-bg: rgba(0, 60, 70, 0.6);
+            --modal-content-bg: #ffffff;
+            --border-color: rgba(0, 77, 64, 0.15);
+        }
+
+        [data-theme="forest"] {
+            --primary-color: #2e7d32;
+            --background-color: #e8f5e9;
+            --card-back: #1b5e20;
+            --card-front: #ffffff;
+            --text-color: #1b3a1f;
+            --success-color: #43a047;
+            --button-hover: #1b5e20;
+            --button-active: #0d3d12;
+            --controls-bg: #ffffff;
+            --modal-bg: rgba(20, 50, 25, 0.6);
+            --modal-content-bg: #ffffff;
+            --border-color: rgba(27, 58, 31, 0.15);
+        }
+
+        [data-theme="sunset"] {
+            --primary-color: #e65100;
+            --background-color: #fff3e0;
+            --card-back: #bf360c;
+            --card-front: #ffffff;
+            --text-color: #3e2723;
+            --success-color: #ef6c00;
+            --button-hover: #bf360c;
+            --button-active: #8e2305;
+            --controls-bg: #ffffff;
+            --modal-bg: rgba(62, 39, 35, 0.55);
+            --modal-content-bg: #ffffff;
+            --border-color: rgba(62, 39, 35, 0.15);
         }
 
         * {
@@ -29,6 +97,7 @@
             line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Main container with max-width for larger screens */
@@ -54,11 +123,12 @@
             justify-content: space-around;
             flex-wrap: wrap;
             gap: 1rem;
-            background: white;
+            background: var(--controls-bg);
             padding: 1rem;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--border-color);
             margin-bottom: 2rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .stat {
@@ -88,11 +158,99 @@
         }
 
         button:hover {
-            background-color: #1565c0;
+            background-color: var(--button-hover);
         }
 
         button.active {
-            background-color: #0d47a1;
+            background-color: var(--button-active);
+        }
+
+        .theme-picker {
+            position: relative;
+        }
+
+        #theme-toggle {
+            padding: 0;
+            font-size: 1.25rem;
+            background: var(--controls-bg);
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        #theme-toggle:hover,
+        #theme-toggle:focus {
+            background: var(--primary-color);
+            color: white;
+            outline: none;
+        }
+
+        .theme-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--controls-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--border-color);
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            min-width: 170px;
+            z-index: 100;
+        }
+
+        .theme-menu[hidden] {
+            display: none;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-option:hover,
+        .theme-option:focus {
+            background: var(--background-color);
+            outline: none;
+        }
+
+        .theme-option[aria-checked="true"] {
+            font-weight: bold;
+        }
+
+        .theme-option[aria-checked="true"]::after {
+            content: "✓";
+            margin-left: auto;
+            color: var(--primary-color);
+        }
+
+        .theme-swatch {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: inline-block;
         }
 
         /* Game grid styles with responsive layout */
@@ -146,7 +304,8 @@
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px var(--border-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .card-front {
@@ -167,18 +326,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: var(--modal-bg);
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
 
         .modal-content {
-            background: white;
+            background: var(--modal-content-bg);
+            color: var(--text-color);
             padding: 2rem;
             border-radius: 8px;
             text-align: center;
             max-width: 400px;
             width: 90%;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Best scores section */
@@ -190,9 +352,11 @@
         .scores-list {
             max-width: 600px;
             margin: 1rem auto;
-            background: white;
+            background: var(--controls-bg);
+            color: var(--text-color);
             padding: 1rem;
             border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Responsive design adjustments */
@@ -234,6 +398,10 @@
                 <h2>Rating</h2>
                 <p class="stat-value rating" aria-live="polite">★★★</p>
             </div>
+            <div class="theme-picker">
+                <button id="theme-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="theme-menu" aria-label="Choose color theme" title="Choose color theme">🎨</button>
+                <div id="theme-menu" class="theme-menu" role="menu" hidden></div>
+            </div>
         </div>
 
         <!-- Grid size selector -->
@@ -263,6 +431,118 @@
     </div>
 
     <script>
+        // ===== THEME MANAGER =====
+        const themeManager = {
+            THEME_KEY: 'memoryGameTheme',
+            DEFAULT: 'light',
+            THEMES: [
+                { id: 'light',  label: 'Light',  swatch: '#2196f3' },
+                { id: 'dark',   label: 'Dark',   swatch: '#1e1e1e' },
+                { id: 'ocean',  label: 'Ocean',  swatch: '#006064' },
+                { id: 'forest', label: 'Forest', swatch: '#2e7d32' },
+                { id: 'sunset', label: 'Sunset', swatch: '#e65100' }
+            ],
+
+            isValidTheme(theme) {
+                return this.THEMES.some(t => t.id === theme);
+            },
+
+            getTheme() {
+                try {
+                    const saved = localStorage.getItem(this.THEME_KEY);
+                    return this.isValidTheme(saved) ? saved : this.DEFAULT;
+                } catch (e) {
+                    return this.DEFAULT;
+                }
+            },
+
+            setTheme(theme) {
+                const validTheme = this.isValidTheme(theme) ? theme : this.DEFAULT;
+                document.documentElement.setAttribute('data-theme', validTheme);
+                try {
+                    localStorage.setItem(this.THEME_KEY, validTheme);
+                } catch (e) {
+                    // persistence failure is non-fatal — theme still applies for this session
+                }
+                this.updateMenuSelection(validTheme);
+            },
+
+            buildMenu() {
+                const menu = document.getElementById('theme-menu');
+                if (!menu) return;
+                menu.innerHTML = this.THEMES.map(t => `
+                    <button class="theme-option" role="menuitemradio" data-theme="${t.id}" aria-checked="false">
+                        <span class="theme-swatch" style="background:${t.swatch}"></span>
+                        <span>${t.label}</span>
+                    </button>
+                `).join('');
+            },
+
+            updateMenuSelection(activeId) {
+                document.querySelectorAll('.theme-option').forEach(btn => {
+                    btn.setAttribute('aria-checked', btn.dataset.theme === activeId ? 'true' : 'false');
+                });
+            },
+
+            openMenu() {
+                const menu = document.getElementById('theme-menu');
+                const button = document.getElementById('theme-toggle');
+                if (!menu || !button) return;
+                menu.hidden = false;
+                button.setAttribute('aria-expanded', 'true');
+            },
+
+            closeMenu() {
+                const menu = document.getElementById('theme-menu');
+                const button = document.getElementById('theme-toggle');
+                if (!menu || !button) return;
+                menu.hidden = true;
+                button.setAttribute('aria-expanded', 'false');
+            },
+
+            toggleMenu() {
+                const menu = document.getElementById('theme-menu');
+                if (!menu) return;
+                if (menu.hidden) this.openMenu(); else this.closeMenu();
+            },
+
+            init() {
+                this.buildMenu();
+                this.setTheme(this.getTheme());
+
+                const button = document.getElementById('theme-toggle');
+                const menu = document.getElementById('theme-menu');
+
+                if (button) {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.toggleMenu();
+                    });
+                }
+
+                if (menu) {
+                    menu.addEventListener('click', (e) => {
+                        const opt = e.target.closest('.theme-option');
+                        if (!opt) return;
+                        this.setTheme(opt.dataset.theme);
+                        this.closeMenu();
+                        if (button) button.focus();
+                    });
+                }
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.theme-picker')) this.closeMenu();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeMenu();
+                        if (button) button.focus();
+                    }
+                });
+            }
+        };
+
         // Game state management
         const gameState = {
             moves: 0,
@@ -497,6 +777,9 @@
                 }
             });
         });
+
+        // Initialize theme manager (must be called before game setup)
+        themeManager.init();
 
         // Initialize game
         updateScoresList();
